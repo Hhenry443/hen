@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+// using https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html
+
 struct termios orig_termios; // Keep the original terminal attributes
 
 void disableRawMode() {
