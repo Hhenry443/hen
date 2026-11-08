@@ -216,6 +216,19 @@ int editorRowCxToRx(erow *row, int cx) {
     return rx;
 }
 
+int editorRowRxToCx(erow *row, int rx) {
+    int cur_rx = 0;
+    int cx;
+    for (cx = 0; cx < row->size; cx++) {
+        if (row->chars[cx] == '\t')
+            cur_rx += (HEN_TAB_STOP - 1) - (cur_rx % HEN_TAB_STOP);
+        cur_rx++;
+        if (cur_rx > rx) return cx;
+    }
+    return cx;
+}
+
+
 void editorUpdateRow(erow *row) {
     int tabs = 0;
     int j;
@@ -419,6 +432,30 @@ void editorSave() {
     free(buf);
 }
 
+/*** find ***/
+
+void editorFind() {
+    std::string s = "Search: %s (ESC to cancel)";
+
+    char *query = editorPrompt(s.data());
+
+    if (query == NULL) return;
+
+    int i;
+    for (i = 0; i < E.numrows; i++) {
+        erow *row = &E.row[i];
+
+        char *match = strstr(row->render, query);
+        if (match) {
+            E.cy = i;
+            E.cx = editorRowRxToCx(row, match - row->render);
+            E.rowoff = E.numrows;
+            break;
+        }
+    }
+
+    free(query);
+}
 /*** append buffer ***/
 
 struct abuf {
@@ -589,6 +626,10 @@ void editorProcessKey() {
             editorSave();
             break;
 
+        case CTRL_KEY('f'):
+            editorFind();
+            break;
+
         default:
             editorInsertChar(c);
             break;
@@ -749,7 +790,7 @@ int main(int argc, char *argv[]) {
         editorOpen(argv[1]);
     }
 
-    editorSetStatusMessage("HELP: Ctrl-Q to Quit | Ctrl-S to save");
+    editorSetStatusMessage("HELP: Ctrl-Q to Quit | Ctrl-S to save | Ctrl-F to find");
 
     while (1) {
         editorRefreshScreen();
