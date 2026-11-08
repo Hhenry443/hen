@@ -204,7 +204,8 @@ int getWindowSize(int *rows, int *cols) {
 
 }
 
-/*** row operation ***/
+/*** row operations ***/
+
 int editorRowCxToRx(erow *row, int cx) {
     int rx = 0;
     int j;
