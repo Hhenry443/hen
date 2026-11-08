@@ -3,4 +3,5 @@ project(hen)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(hen main.cpp)
+add_executable(hen main.cpp
+)
